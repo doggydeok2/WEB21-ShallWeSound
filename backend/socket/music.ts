@@ -1,10 +1,8 @@
-import music from '../services/music';
 import type { Music } from '../types';
 
 export class PlayList {
   playlist: Music[] = [];
 
-  constructor() {}
   getPlayList(): Music[] {
     return this.playlist;
   }
@@ -24,8 +22,7 @@ export class PlayList {
   }
 
   getCurrentMusic(): Music {
-    const current = this.playlist.find(music => music.isPlayed)!;
-    return current;
+    return this.playlist.find(music => music.isPlayed)!;
   }
 
   addMusics(musics: Music[]): void {
@@ -45,8 +42,8 @@ export class PlayList {
     this.playlist = this.playlist.filter(music => music.MID !== MID);
   }
 
-  isExist(musics: Music[]): boolean {
-    const MIDs = this.playlist.map(music => music.MID);
-    return musics.find(music => MIDs.includes(music.MID)) ? true : false;
+  isExist(MIDs: number[]): boolean {
+    const temp = new Set(this.playlist.map(music => music.MID));
+    return MIDs.find(MID => temp.has(MID)) ? true : false;
   }
 }
