@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Socket } from 'socket.io-client';
 import { useSocket } from '../../context/MyContext';
-
+import { apiFetch, fadeOut } from '../../hooks/utils';
 import '../../stylesheets/header.scss';
 import { Room } from '../../types';
 
 function CreateRoomModal({ history, onClose }: { history: RouteComponentProps['history']; onClose: () => void }) {
   const socket: Socket = useSocket()!;
-
+  const alertRef = useRef<HTMLDivElement>(null);
   const [dialogInput, setDialogInput] = useState<Room>({
     id: '',
     name: '',
@@ -35,12 +35,11 @@ function CreateRoomModal({ history, onClose }: { history: RouteComponentProps['h
       dialogInput.name.split('').every(val => val === ' ') ||
       dialogInput.description.split('').every(val => val === ' ')
     ) {
-      alert('공백만 입력할 수 없습니다. 다시 입력해주세요');
+      fadeOut(alertRef.current!);
       return;
     }
 
     if (dialogInput.name && dialogInput.description) {
-      console.log('add Room');
       socket.emit('createRoom', {
         id: 0,
         name: dialogInput.name,
@@ -49,7 +48,7 @@ function CreateRoomModal({ history, onClose }: { history: RouteComponentProps['h
 
       onClose();
     } else {
-      alert('입력칸을 다 채워주세요');
+      fadeOut(alertRef.current!);
     }
   }
 
@@ -83,6 +82,13 @@ function CreateRoomModal({ history, onClose }: { history: RouteComponentProps['h
         <button className="button" onClick={onClose}>
           취소
         </button>
+        <div className={'delegate'} ref={alertRef}>
+          공백만 입력할 수 없습니다. <br />
+          다시 입력해주세요.
+        </div>
+      </div>
+      <div className={'delegate'} ref={alertRef}>
+        입력 칸을 다 채워 주세요
       </div>
     </div>
   );
@@ -123,7 +129,7 @@ function CreateRoomButton({ history }: { history: RouteComponentProps['history']
           <>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              enable-background="new 0 0 24 24"
+              enableBackground="new 0 0 24 24"
               height="24px"
               viewBox="0 0 24 24"
               width="24px"
